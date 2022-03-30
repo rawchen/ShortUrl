@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rawchen.shorturl.mapper.UrlMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.rawchen.shorturl.entity.ShortUrl">
+        <id column="id" property="id" />
+        <id column="code" property="code" />
+        <result column="link" property="link" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, code, link
+    </sql>
+    <insert id="insert" parameterType="ShortUrl">
+        INSERT INTO short_url(code, link) VALUES (#{code}, #{link})
+    </insert>
+
+    <select id="getByLink" resultMap="BaseResultMap" parameterType="string">
+        SELECT id, code, link
+        FROM short_url
+        WHERE link = #{link}
+    </select>
+    <select id="getByCode" resultMap="BaseResultMap" parameterType="string">
+        SELECT id, code, link
+        FROM short_url
+        WHERE code = #{code}
+    </select>
+
+</mapper>
