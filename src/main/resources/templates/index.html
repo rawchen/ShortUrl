@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"  lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>ShortUrl</title>
+</head>
+<script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+<script th:src="@{/static/layer/layer.js}"></script>
+<link rel="stylesheet" type="text/css" th:href="@{/static/css/mystyle.css}">
+<link rel="shortcut icon" th:href="@{/static/img/favicon.ico}">
+<style>
+
+</style>
+
+<body>
+<h2 style="text-align: center">生成短链接服务</h2>
+    <label for="longurl">
+        <input id="longurl" name="longurl" class="url-input" type="text" placeholder="请输入你的链接">
+    </label>
+    <button type="button" onclick="doSubmit()">生成</button>
+    <input id="shorturl" class="url-input" type="text">
+</body>
+<script>
+    const input = document.getElementById("longurl");
+    input.focus();
+	$('#longurl').bind("keypress", function() {
+		if (event.keyCode === 13) {
+			doSubmit();
+		}
+	});
+
+	function isUrl(str) {
+        const v = new RegExp('^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$', 'i');
+        return v.test(str);
+    }
+
+    function doSubmit() {
+        var link = $("#longurl").val().trim();
+        if (isUrl(link)) {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "/insert",//url
+                data: {"longurl": link},
+                success: function (result) {
+                    if (result.code === 200) {
+                        let target = document.createElement('pre');
+                        target.style.opacity = '0';
+                        target.textContent = document.location.protocol + "//" + window.location.host + "/" + result.msg;
+                        document.body.appendChild(target);
+                        let range = document.createRange();
+                        range.selectNode(target);
+                        window.getSelection().removeAllRanges();
+                        window.getSelection().addRange(range);
+                        if (document.execCommand('copy')) {
+                            document.execCommand('copy');
+                        }
+                        window.getSelection().removeAllRanges();
+                        layer.msg("短链已复制到剪贴板");
+                        $("#shorturl").val(document.location.protocol + "//" + window.location.host + "/" + result.msg);
+                    } else if (result.code === 400) {
+                        layer.msg(result.msg);
+                    } else if (result.code === 500) {
+                        layer.msg(result.msg);
+                    }
+                },
+                error: function () {
+                    layer.msg("异常！");
+                }
+            });
+        } else {
+            input.focus();
+            layer.msg("URL格式不正确！");
+
+        }
+    }
+
+</script>
+</html>

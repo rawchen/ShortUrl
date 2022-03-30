@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+    <head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+		<meta name="renderer" content="webkit">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta http-equiv="Cache-Control" content="no-transform"/>
+        <link rel="shortcut icon" th:href="@{/static/img/favicon.ico}">
+        <link rel="apple-touch-icon" th:href="@{/static/img/favicon.ico}">
+        <link rel="stylesheet" th:href="@{/static/css/error.css}">
+        <title>ShortUrl</title>
+    </head>
+    <body>
+        <div class="body404">
+            <div class="info404">
+                <header id="header404" class="clearfix">
+                    <div class="site-name404">500</div>
+                </header>
+                <section>
+                    <div class="title404">
+                        <p>Internal server error.</p>
+                        <p><span id="tip-text">5</span>s 后重定向到 <a href="/" id="tip-text-a" style="border-bottom: 1px solid gray;"></a></p>
+                    </div>
+                    <!-- <a href="javascript:history.back()" class="index404">Go back</a> -->
+                </section>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        window.onload = function(){
+            document.getElementById('tip-text-a').innerText = window.location.host;
+        var i = 4;
+        var intervalid;
+        intervalid = setInterval(fun, 1000);
+        function fun() {
+            if (i == 0) {
+                location.href = document.location.protocol + "//" + window.location.host;
+                clearInterval(intervalid); 
+            }
+            document.getElementById('tip-text').innerText = i;
+            i--;
+        }
+    }
+    </script>
+</html>

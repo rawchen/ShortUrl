@@ -19,19 +19,24 @@ public class WebController {
 	@Autowired
 	private UrlMapper mapper;
 
-	@RequestMapping(path = "/api", method = RequestMethod.GET)
-	@ResponseBody
-	public String test() {
-		System.out.println(URLUtil.encode("https://www.baidu.com/s?ie=UTF-8&wd=多益网络为啥是hr先面试"));
-		String temp = URLUtil.encodeAll("https://www.baidu.com/s?ie=UTF-8&wd=多益网络为啥是hr先面试");
-		System.out.println(URLUtil.decode(temp));
-
-		return "123";
-	}
-
 	@RequestMapping("/")
 	public String index() {
-		return "index2";
+		return "index";
+	}
+
+	@RequestMapping("/404")
+	public String errorIndex() {
+		return "404";
+	}
+
+	@RequestMapping("/{code}")
+	public String toLink(@PathVariable String code) {
+		ShortUrl shortUrl = mapper.getByCode(code);
+		if (shortUrl != null) {
+			return "redirect:" + URLUtil.decode(shortUrl.getLink());
+		} else {
+			return "redirect:" + "/404";
+		}
 	}
 
 	@PostMapping("/insert")
@@ -41,6 +46,10 @@ public class WebController {
 
 		if ("".equals(tempUrl)) {
 			return Result.fail("请填写URL链接");
+		}
+
+		if (!StringUtil.isUrl(longurl)) {
+			return Result.fail("请正确填写URL链接");
 		}
 
 		try {
