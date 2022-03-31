@@ -2,6 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"  lang="zh">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-transform"/>
     <title>ShortUrl</title>
 </head>
 <script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
@@ -17,7 +21,7 @@
     <label for="longurl">
         <input id="longurl" name="longurl" class="url-input" type="text" placeholder="请输入你的链接">
     </label>
-    <button type="button" onclick="doSubmit()">生成</button>
+    <button type="button" id="do-submit" onclick="doSubmit()">生成</button>
     <input id="shorturl" class="url-input" type="text">
 </body>
 <script>
@@ -36,6 +40,7 @@
 
     function doSubmit() {
         var link = $("#longurl").val().trim();
+        $('#do-submit').val('生成..');
         if (isUrl(link)) {
             $.ajax({
                 //几个参数需要注意一下
@@ -43,22 +48,16 @@
                 dataType: "json",//预期服务器返回的数据类型
                 url: "/insert",//url
                 data: {"longurl": link},
+                complete:function () {$('#do-submit').val('生成')},
                 success: function (result) {
                     if (result.code === 200) {
-                        let target = document.createElement('pre');
-                        target.style.opacity = '0';
-                        target.textContent = document.location.protocol + "//" + window.location.host + "/" + result.msg;
-                        document.body.appendChild(target);
-                        let range = document.createRange();
-                        range.selectNode(target);
-                        window.getSelection().removeAllRanges();
-                        window.getSelection().addRange(range);
+                        layer.msg("短链已复制到剪贴板");
+                        $("#shorturl").val(document.location.protocol + "//" + window.location.host + "/" + result.msg);
+                        document.querySelector('#shorturl').select();
                         if (document.execCommand('copy')) {
                             document.execCommand('copy');
                         }
-                        window.getSelection().removeAllRanges();
-                        layer.msg("短链已复制到剪贴板");
-                        $("#shorturl").val(document.location.protocol + "//" + window.location.host + "/" + result.msg);
+                        document.querySelector('#shorturl').blur();
                     } else if (result.code === 400) {
                         layer.msg(result.msg);
                     } else if (result.code === 500) {

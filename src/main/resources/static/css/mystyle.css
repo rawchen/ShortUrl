@@ -8,6 +8,7 @@
 }
 
 body{
+	text-align: center;
 	margin: 10px;
 	box-sizing: border-box;
 	overflow: hidden;
@@ -21,7 +22,11 @@ body{
 	-moz-appearance: none;
 	appearance: none;
 	width: 100%;
-	border: 0;
+	border-radius: 5px;
+	border-bottom: 2px #3498db solid;
+	border-left: none;
+	border-right: none;
+	border-top: none;
 	outline: none;
 	font-family: inherit;
 	height: 56px;
@@ -29,17 +34,24 @@ body{
 	font-weight: 400;
 	padding: 0 20px;
 	background: rgba(0, 0, 0, 0.04);
-	box-shadow: inset 0 -1px 0 rgb(0 0 0 / 30%);
 	color: #000;
 	transition: all 0.15s ease;
 }
 
 .url-input:hover {
-	background: rgba(0, 0, 0, 0.1);
-	box-shadow: inset 0 -1px 0 rgb(0 0 0 / 50%);
+	border-bottom: 4px #3498db solid;
+	background: rgba(0, 0, 0, 0.07);
+}
+
+@media (max-width: 600px) {
+	.url-input {
+		height: 100px;
+	}
 }
 
 button {
+	max-width: 200px;
+	border-radius: 5px;
 	cursor:pointer;
 	width: 100%;
 	background-color: #3498db;
