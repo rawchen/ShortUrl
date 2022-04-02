@@ -40,15 +40,28 @@
 
     function doSubmit() {
         var link = $("#longurl").val().trim();
-        $('#do-submit').val('生成..');
         if (isUrl(link)) {
+            const btnObject = document.getElementById('do-submit');
+            btnObject.innerHTML = '生成(10)';
+            btnObject.disabled = true;
+            let sec = 10;
+            let intervalId = setInterval(function () {
+                if (sec > 0) {
+                    btnObject.innerHTML = '生成(' + sec + ')';
+                    btnObject.disabled = true;
+                    sec--;
+                } else {
+                    btnObject.innerHTML = '生成';
+                    btnObject.disabled = false;
+                    clearInterval(intervalId);
+                }
+            }, 1000);
             $.ajax({
                 //几个参数需要注意一下
                 type: "POST",//方法类型
                 dataType: "json",//预期服务器返回的数据类型
                 url: "/insert",//url
                 data: {"longurl": link},
-                complete:function () {$('#do-submit').val('生成')},
                 success: function (result) {
                     if (result.code === 200) {
                         layer.msg("短链已复制到剪贴板");
