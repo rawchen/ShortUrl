@@ -45,7 +45,8 @@
         var link = $("#longurl").val().trim();
         // 如果包含本域名
         if (link.indexOf(window.location.host) != -1) {
-
+            input.focus();
+            layer.msg("不允许循环哦！");
         }
         if (isUrl(link)) {
             const btnObject = document.getElementById('do-submit');
