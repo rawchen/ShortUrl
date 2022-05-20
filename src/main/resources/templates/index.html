@@ -43,6 +43,10 @@
 
     function doSubmit() {
         var link = $("#longurl").val().trim();
+        // 如果包含本域名
+        if (link.indexOf(window.location.host) != -1) {
+
+        }
         if (isUrl(link)) {
             const btnObject = document.getElementById('do-submit');
             btnObject.innerHTML = '生成(10)';
