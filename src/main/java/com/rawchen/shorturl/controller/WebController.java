@@ -2,6 +2,7 @@ package com.rawchen.shorturl.controller;
 
 import cn.hutool.core.util.URLUtil;
 import com.rawchen.shorturl.entity.ShortUrl;
+import com.rawchen.shorturl.limit.RateLimit;
 import com.rawchen.shorturl.mapper.UrlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,12 @@ public class WebController {
 		return "404";
 	}
 
+	@RequestMapping("/400")
+	public String limitPage() {
+		return "400";
+	}
+
+	@RateLimit(name = "短链跳转接口", perSecond = 0.5)
 	@RequestMapping("/{code}")
 	public String toLink(@PathVariable String code) {
 		ShortUrl shortUrl = mapper.getByCode(code);

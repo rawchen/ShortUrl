@@ -66,8 +66,13 @@ public class RateLimitAspect {
 			String cacheKey = RateLimitUtil.generateCacheKey(method, request);
 			RateLimiter limiter = limitCaches.get(cacheKey);
 			if (!limiter.tryAcquire()) {
-				logger.info("限流{}方法，具体内容【{}】", point.getSignature().getName(), cacheKey);
-				return Result.fail("你手速太快了");
+				String pointMethodName = point.getSignature().getName();
+				logger.info("限流{}方法，具体内容【{}】", pointMethodName, cacheKey);
+				if ("toLink".equals(pointMethodName)) {
+					return "redirect:" + "/400";
+				} else {
+					return Result.fail("你手速太快了");
+				}
 			}
 		}
 		return point.proceed();
