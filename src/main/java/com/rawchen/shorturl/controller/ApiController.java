@@ -39,11 +39,11 @@ public class ApiController {
 				//数据库已经存在相同link的短链接
 				return Result.ok(shortUrl.getCode());
 			} else {
-				String code = StringUtil.getRandomStr(5);
+				String code = StringUtil.getRandomStrNoCapitalLetter(5);
 				//数据库不存在给定的link的短链接，先检查下生成的编码是否有重复
 				while (mapper.getByCode(code) != null) {
 					//有重复重新生成编码
-					code = StringUtil.getRandomStr(5);
+					code = StringUtil.getRandomStrNoCapitalLetter(5);
 				}
 				mapper.insert(new ShortUrl(code, tempUrl));
 				return Result.ok(code);
