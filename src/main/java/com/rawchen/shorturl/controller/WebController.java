@@ -1,6 +1,5 @@
 package com.rawchen.shorturl.controller;
 
-import cn.hutool.core.util.URLUtil;
 import com.rawchen.shorturl.entity.ShortUrl;
 import com.rawchen.shorturl.limit.RateLimit;
 import com.rawchen.shorturl.mapper.UrlMapper;
@@ -39,7 +38,9 @@ public class WebController {
 	public String toLink(@PathVariable String code) {
 		ShortUrl shortUrl = mapper.getByCode(code);
 		if (shortUrl != null) {
-			return "redirect:" + URLUtil.decode(shortUrl.getLink());
+//			return "redirect:" + URLUtil.decode(shortUrl.getLink());
+			shortUrl.setLink(shortUrl.getLink().replaceAll("%3", "?"));
+			return "redirect:" + shortUrl.getLink();
 		} else {
 			return "redirect:" + "/404";
 		}

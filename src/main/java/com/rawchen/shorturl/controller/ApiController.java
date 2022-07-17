@@ -27,7 +27,7 @@ public class ApiController {
 	@ResponseBody
 	public Result insert(@RequestParam(name = "longurl") String longurl) {
 		try {
-			String tempUrl = URLUtil.encodeAll(longurl).trim();
+			String tempUrl = URLUtil.encode(longurl).trim();
 			if ("".equals(tempUrl)) {
 				return Result.fail("请填写URL链接");
 			}
