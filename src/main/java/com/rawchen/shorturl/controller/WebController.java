@@ -39,7 +39,7 @@ public class WebController {
 		ShortUrl shortUrl = mapper.getByCode(code);
 		if (shortUrl != null) {
 //			return "redirect:" + URLUtil.decode(shortUrl.getLink());
-			shortUrl.setLink(shortUrl.getLink().replaceAll("%3", "?"));
+			shortUrl.setLink(shortUrl.getLink().replaceAll("%3F", "?"));
 			return "redirect:" + shortUrl.getLink();
 		} else {
 			return "redirect:" + "/404";
