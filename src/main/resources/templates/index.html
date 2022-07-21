@@ -9,13 +9,17 @@
     <title>ShortUrl</title>
 </head>
 <script th:src="@{/static/js/jquery.min.js}"></script>
+<script th:src="@{/static/js/clipboard.min.js}"></script>
+<script th:src="@{/static/datepicker/datepicker.min.js}"></script>
 <script th:src="@{/static/layer/layer.js}"></script>
 <script th:src="@{/static/bootstrap-3.3.7/js/bootstrap.js}"></script>
 <script th:src="@{/static/js/application.fn.js}"></script>
+<script th:src="@{/static/js/application.js}"></script>
 <script th:src="@{/static/js/server.js}"></script>
 <!--<link rel="stylesheet" type="text/css" th:href="@{/static/css/mystyle.css}">-->
 <link rel="stylesheet" type="text/css" th:href="@{/static/css/style.css}">
 <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap-3.3.7/css/bootstrap.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/static/datepicker/datepicker.min.css}">
 <link rel="shortcut icon" th:href="@{/static/img/favicon.ico}">
 <style>
 
@@ -30,7 +34,7 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <i class="glyphicon glyphicon-menu-hamburger"></i>
                 </button>
-                <a class="navbar-brand" href="https://ivii.cn">
+                <a class="navbar-brand" href="#" onclick="location.reload()">
                     <img th:src="@{/static/img/logo.png}" alt="短网址">
                 </a>
             </div>
@@ -65,7 +69,7 @@
                 </div>
             </div>
             <div class="col-xs-6">
-                <p class="main-image row"><img src="https://www.suoduan.net/themes/blue/images/banner.png" alt="网址缩短"></p>
+                <p class="main-image row"><img th:src="@{/static/img/banner.png}" alt="网址缩短"></p>
             </div>
         </div>
     </div>
@@ -80,11 +84,11 @@
                             <div class="col-sm-10">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-link"></i></span>
-                                    <input type="text" class="form-control main-input" name="url" value="" placeholder="请输入您要缩短的长网址" autocomplete="off">
+                                    <input type="text" class="form-control main-input" id="longurl" name="url" value="" placeholder="请输入您要缩短的长网址" autocomplete="off">
                                 </div>
                             </div>
                             <div class="col-sm-2">
-                                <button class="btn btn-primary btn-block main-button" id="shortenurl" type="submit">立即缩短</button>
+                                <button class="btn btn-primary btn-block main-button" id="shortenurl" type="button" onclick="doSubmit()">立即缩短</button>
                             </div>
                         </div>
                     </div>
@@ -275,12 +279,12 @@
 </div>
 
 
-<h2 style="text-align: center">生成短链接服务</h2>
-<label for="longurl">
-    <input id="longurl" name="longurl" class="url-input" type="text" placeholder="请输入你的链接">
-</label>
-<button type="button" id="do-submit" onclick="doSubmit()">生成</button>
-<input id="shorturl" class="url-input" type="text">
+<!--<h2 style="text-align: center">生成短链接服务</h2>-->
+<!--<label for="longurl">-->
+<!--    <input id="longurl" name="longurl" class="url-input" type="text" placeholder="请输入你的链接">-->
+<!--</label>-->
+<!--<button type="button" id="do-submit" onclick="doSubmit()">生成</button>-->
+<!--<input id="shorturl" class="url-input" type="text">-->
 
 </body>
 
@@ -294,7 +298,7 @@
 
     $('#longurl').bind("keypress", function() {
         if (event.keyCode === 13) {
-            if (!$('#do-submit').prop("disabled")) {
+            if (!$('#shortenurl').prop("disabled")) {
                 doSubmit();
             }
         }
@@ -314,17 +318,17 @@
                 layer.msg("不允许循环哦！");
                 return;
             }
-            const btnObject = document.getElementById('do-submit');
-            btnObject.innerHTML = '生成(10)';
+            const btnObject = document.getElementById('shortenurl');
+            btnObject.innerHTML = '立即缩短(10)';
             btnObject.disabled = true;
             let sec = 10;
             let intervalId = setInterval(function () {
                 if (sec > 0) {
-                    btnObject.innerHTML = '生成(' + sec + ')';
+                    btnObject.innerHTML = '立即缩短(' + sec + ')';
                     btnObject.disabled = true;
                     sec--;
                 } else {
-                    btnObject.innerHTML = '生成';
+                    btnObject.innerHTML = '立即缩短';
                     btnObject.disabled = false;
                     clearInterval(intervalId);
                 }
@@ -334,16 +338,26 @@
                 type: "POST",//方法类型
                 dataType: "json",//预期服务器返回的数据类型
                 url: "/insert",//url
-                data: {"longurl": link},
+                data: {"longurl": decodeURI(link)},
                 success: function (result) {
                     if (result.code === 200) {
-                        layer.msg("短链已复制到剪贴板");
-                        $("#shorturl").val(document.location.protocol + "//" + window.location.host + "/" + result.msg);
-                        document.querySelector('#shorturl').select();
-                        if (document.execCommand('copy')) {
-                            document.execCommand('copy');
-                        }
-                        document.querySelector('#shorturl').blur();
+
+                        let link = document.location.protocol + "//" + window.location.host + "/" + result.msg;
+
+                        $('.ajax').hide().html('<div class="alert alert-success no-round">网址已成功缩短</div>').fadeIn('slow');
+                        $('.share-this').html('<div class="sharetop"><p>短网址</p><span id="short-link">' + link + '</span><div id="copyurl">复制</div></div><div class="panel-default panel-body"><img src="'+ 'https://java.rawchen.com/qrcode/api/?url=' + link + '" alt=""><br>短网址二维码</div>').fadeIn('slow');
+                        // $("#short-link").val(link);
+                        // document.querySelector('#short-link').select();
+                        // if (document.execCommand('copy')) {
+                        //     document.execCommand('copy');
+                        // }
+                        // document.querySelector('#shorturl').blur();
+                        $("#copyurl").attr("data-clipboard-text", link).show();
+                        var copy = new Clipboard('#copyurl');
+                        copy.on('success', function(e) {
+                            layer.msg('短链已复制到剪贴板', {icon: 1,closeBtn: 2});
+                        });
+                        $("#copyurl").click();
                     } else if (result.code === 400) {
                         layer.msg(result.msg);
                     } else if (result.code === 500) {
@@ -351,13 +365,12 @@
                     }
                 },
                 error: function () {
-                    layer.msg("异常！");
+                    layer.msg('异常！', {icon: 2,closeBtn: 2});
                 }
             });
         } else {
             input.focus();
-            layer.msg("URL格式不正确！");
-
+            layer.msg('URL格式不正确！', {icon: 2,closeBtn: 2});
         }
     }
 

@@ -1,6 +1,5 @@
 package com.rawchen.shorturl.controller;
 
-import cn.hutool.core.util.URLUtil;
 import com.rawchen.shorturl.entity.Result;
 import com.rawchen.shorturl.entity.ShortUrl;
 import com.rawchen.shorturl.limit.RateLimit;
@@ -27,7 +26,8 @@ public class ApiController {
 	@ResponseBody
 	public Result insert(@RequestParam(name = "longurl") String longurl) {
 		try {
-			String tempUrl = URLUtil.encode(longurl).trim();
+			System.out.println(longurl);
+			String tempUrl = longurl.trim();
 			if ("".equals(tempUrl)) {
 				return Result.fail("请填写URL链接");
 			}

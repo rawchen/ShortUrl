@@ -3117,7 +3117,7 @@ ul.form_opt li a.current {
     width: 100%;
   }
   #main-form .main-options {
-    margin-top: -260px;
+    margin-top: -152px;
   }
   #main-form .main-options .alias {
     white-space: nowrap;
@@ -3136,7 +3136,7 @@ ul.form_opt li a.current {
   }
   #main-form .col-sm-2 {
     padding: 0;
-    margin: 220px 0 0 0;
+    margin: 120px 0 0 0;
     text-align: center;
   }
   #main-form .main-form .input-group {

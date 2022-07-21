@@ -3,6 +3,7 @@ package com.rawchen.shorturl.controller;
 import com.rawchen.shorturl.entity.ShortUrl;
 import com.rawchen.shorturl.limit.RateLimit;
 import com.rawchen.shorturl.mapper.UrlMapper;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,13 +37,16 @@ public class WebController {
 	@RateLimit(name = "短链跳转接口", perSecond = 0.5)
 	@RequestMapping("/{code}")
 	public String toLink(@PathVariable String code) {
-		ShortUrl shortUrl = mapper.getByCode(code);
-		if (shortUrl != null) {
-//			return "redirect:" + URLUtil.decode(shortUrl.getLink());
-			shortUrl.setLink(shortUrl.getLink().replaceAll("%3F", "?"));
-			return "redirect:" + shortUrl.getLink();
-		} else {
-			return "redirect:" + "/404";
+		try {
+			ShortUrl shortUrl = mapper.getByCode(code);
+			if (shortUrl != null) {
+				return "redirect:" + URIUtil.encodeQuery(shortUrl.getLink());
+			} else {
+				return "redirect:" + "/404";
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
+		return "redirect:" + "/404";
 	}
 }
