@@ -289,10 +289,6 @@
 </body>
 
 <script>
-    // layer.msg("请输入正确的网址", {
-    //     icon: 2,
-    //     closeBtn: 2
-    // });
     const input = document.getElementById("longurl");
     input.focus();
 
@@ -315,7 +311,7 @@
             // 如果包含本域名
             if (link.indexOf(window.location.host) !== -1) {
                 input.focus();
-                layer.msg("不允许循环哦！");
+                layer.msg('不允许循环哦！', {icon: 2,closeBtn: 2});
                 return;
             }
             const btnObject = document.getElementById('shortenurl');
