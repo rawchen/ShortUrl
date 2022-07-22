@@ -17,4 +17,6 @@ public interface UrlMapper {
 	ShortUrl getByCode(String code);
 
 	void insert(ShortUrl shortUrl);
+
+	void scanDeleteExpiredLink();
 }

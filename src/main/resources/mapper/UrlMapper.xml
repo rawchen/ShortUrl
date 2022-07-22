@@ -7,23 +7,31 @@
         <id column="id" property="id" />
         <id column="code" property="code" />
         <result column="link" property="link" />
+        <result column="effective_date" property="effectiveDate" />
+        <result column="password" property="password" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, code, link
+        id, code, link, effective_date
     </sql>
     <insert id="insert" parameterType="ShortUrl">
-        INSERT INTO short_url(code, link) VALUES (#{code}, #{link})
+        INSERT INTO short_url(code, link, effective_date, password) VALUES (#{code}, #{link}, #{effectiveDate}, #{password})
     </insert>
+	<delete id="scanDeleteExpiredLink">
+        DELETE FROM short_url
+        WHERE effective_date > CURDATE()
+    </delete>
 
-    <select id="getByLink" resultMap="BaseResultMap" parameterType="string">
-        SELECT id, code, link
+	<select id="getByLink" resultMap="BaseResultMap" parameterType="string">
+        SELECT id, code, link, effective_date
         FROM short_url
         WHERE link = #{link}
+        AND effective_date is NULL
+        AND password is NULL
     </select>
     <select id="getByCode" resultMap="BaseResultMap" parameterType="string">
-        SELECT id, code, link
+        SELECT id, code, link, effective_date
         FROM short_url
         WHERE code = #{code}
     </select>

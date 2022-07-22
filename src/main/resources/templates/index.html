@@ -308,6 +308,15 @@
     function doSubmit() {
         var link = $("#longurl").val().trim();
         if (isUrl(link)) {
+            if ($("#expiry").val() !== "") {
+                regex = /^\d{4}[\/](0?[1-9]|1[012])[\/](0?[1-9]|[12][0-9]|3[01])$/;
+                if (!regex.test($("#expiry").val().trim())) {
+                    $("#expiry").focus();
+                    layer.msg('日期格式不正确！', {icon: 2,closeBtn: 2});
+                    return;
+                }
+            }
+
             // 如果包含本域名
             if (link.indexOf(window.location.host) !== -1) {
                 input.focus();
@@ -334,7 +343,8 @@
                 type: "POST",//方法类型
                 dataType: "json",//预期服务器返回的数据类型
                 url: "/insert",//url
-                data: {"longurl": decodeURI(link)},
+                headers: {'content-type': 'application/json'},
+                data: JSON.stringify({"longUrl": decodeURI(link), "effectiveDate": $('#expiry').val(), "password": $('#pass').val()}),
                 success: function (result) {
                     if (result.code === 200) {
 
@@ -342,22 +352,15 @@
 
                         $('.ajax').hide().html('<div class="alert alert-success no-round">网址已成功缩短</div>').fadeIn('slow');
                         $('.share-this').html('<div class="sharetop"><p>短网址</p><span id="short-link">' + link + '</span><div id="copyurl">复制</div></div><div class="panel-default panel-body"><img src="'+ 'https://java.rawchen.com/qrcode/api/?url=' + link + '" alt=""><br>短网址二维码</div>').fadeIn('slow');
-                        // $("#short-link").val(link);
-                        // document.querySelector('#short-link').select();
-                        // if (document.execCommand('copy')) {
-                        //     document.execCommand('copy');
-                        // }
-                        // document.querySelector('#shorturl').blur();
                         $("#copyurl").attr("data-clipboard-text", link).show();
                         var copy = new Clipboard('#copyurl');
                         copy.on('success', function(e) {
                             layer.msg('短链已复制到剪贴板', {icon: 1,closeBtn: 2});
                         });
-                        $("#copyurl").click();
                     } else if (result.code === 400) {
-                        layer.msg(result.msg);
+                        layer.msg(result.msg, {icon: 2,closeBtn: 2});
                     } else if (result.code === 500) {
-                        layer.msg(result.msg);
+                        layer.msg(result.msg, {icon: 2,closeBtn: 2});
                     }
                 },
                 error: function () {
