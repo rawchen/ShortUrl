@@ -25,7 +25,6 @@ public class ScheduleTask {
 	 */
 	@Scheduled(cron = "0 0 1 * * ?")
 	private void scanDeleteExpiredLink() throws Exception {
-		System.out.println(1);
 		mapper.scanDeleteExpiredLink();
 	}
 }

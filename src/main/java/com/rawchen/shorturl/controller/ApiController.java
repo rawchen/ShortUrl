@@ -1,5 +1,6 @@
 package com.rawchen.shorturl.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.rawchen.shorturl.DTO.ShortUrlDTO;
 import com.rawchen.shorturl.entity.Result;
 import com.rawchen.shorturl.entity.ShortUrl;
@@ -27,22 +28,26 @@ public class ApiController {
 	@ResponseBody
 	public Result insert(@RequestBody ShortUrlDTO dto) {
 		try {
-			System.out.println(dto.getLongUrl());
-			System.out.println(dto.getEffectiveDate());
-			String tempUrl = dto.getLongUrl().trim();
-			if ("".equals(tempUrl)) {
+			if (dto == null)
+				return Result.fail("请勿直接访问");
+			if (StrUtil.isBlank(dto.getLongUrl()))
 				return Result.fail("请填写URL链接");
-			}
-			if (!StringUtil.isUrl(dto.getLongUrl())) {
+
+			String tempUrl = dto.getLongUrl().trim();
+			String password = "";
+
+			if (!StringUtil.isUrl(tempUrl)) {
 				return Result.fail("请正确填写URL链接");
 			}
 
-			if (dto.getPassword() != null && "".equals(dto.getPassword())) {
+			if (StrUtil.isBlank(dto.getPassword())) {
 				dto.setPassword(null);
+			} else {
+				password = dto.getPassword().trim();
 			}
 
 			//如果有填写过期时间，则重新生成新的不重复短链
-			if (dto.getEffectiveDate() != null || !StringUtil.isEmpty(dto.getPassword())) {
+			if (dto.getEffectiveDate() != null || !StrUtil.isBlank(password)) {
 				String code = StringUtil.getRandomStrNoCapitalLetter(5);
 				//数据库不存在给定的link的短链接，先检查下生成的编码是否有重复
 				while (mapper.getByCode(code) != null) {
@@ -68,10 +73,9 @@ public class ApiController {
 				mapper.insert(new ShortUrl(code, tempUrl));
 				return Result.ok(code);
 			}
-		} catch (RuntimeException e) {
-			return Result.error(e.getMessage());
 		} catch (Exception e) {
-			return Result.error("系统异常！");
+			e.printStackTrace();
+			return Result.error(e.getMessage());
 		}
 	}
 }

@@ -31,9 +31,14 @@
         AND password is NULL
     </select>
     <select id="getByCode" resultMap="BaseResultMap" parameterType="string">
-        SELECT id, code, link, effective_date
+        SELECT id, code, link, effective_date, password
         FROM short_url
         WHERE code = #{code}
+    </select>
+    <select id="getByCodeAndPassword" resultType="ShortUrl" parameterType="string">
+        SELECT code, link
+        FROM short_url
+        WHERE code = #{code} and password = #{password}
     </select>
 
 </mapper>

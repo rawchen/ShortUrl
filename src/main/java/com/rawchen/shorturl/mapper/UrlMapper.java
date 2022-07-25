@@ -19,4 +19,6 @@ public interface UrlMapper {
 	void insert(ShortUrl shortUrl);
 
 	void scanDeleteExpiredLink();
+
+	ShortUrl getByCodeAndPassword(ShortUrl shortUrlData);
 }

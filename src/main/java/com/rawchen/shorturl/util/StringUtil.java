@@ -57,13 +57,13 @@ public class StringUtil {
 
 				if (ran > 36) {
 					// a-z
-					System.out.println((char) (ran + 60));
+					sb.append((char) (ran + 60));
 				} else if (ran > 10) {
 					// A-Z
-					System.out.println((char) (ran + 54));
+					sb.append((char) (ran + 54));
 				} else {
 					// 0-9
-					System.out.println((char) (ran + 47));
+					sb.append((char) (ran + 47));
 				}
 				ran = random.nextInt(62) + 1;
 			}
