@@ -54,7 +54,7 @@ public class WebController {
 					return "redirect:" + URIUtil.encodeQuery(shortUrl.getLink());
 				} else {
 					model.addAttribute("code", shortUrl.getCode());
-					return "/password";
+					return "password";
 				}
 			} else {
 				return "redirect:" + "/404";
