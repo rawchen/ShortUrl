@@ -39,7 +39,7 @@ public class RateLimitAspect {
 	 */
 	private static LoadingCache<String, RateLimiter> limitCaches = CacheBuilder.newBuilder()
 			.maximumSize(1000)
-			.expireAfterWrite(1, TimeUnit.DAYS)
+			.expireAfterWrite(1, TimeUnit.MILLISECONDS)
 			.build(new CacheLoader<String, RateLimiter>() {
 				@Override
 				public RateLimiter load(String key) {
