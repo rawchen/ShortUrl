@@ -37,7 +37,7 @@
         WHERE code = #{code}
     </select>
     <select id="getByCodeAndPassword" resultType="ShortUrl" parameterType="string">
-        SELECT code, link
+        SELECT id, code, link
         FROM short_url
         WHERE code = #{code} and password = #{password}
     </select>

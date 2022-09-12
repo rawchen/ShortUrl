@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rawchen.shorturl.mapper.LogMapper">
+
+  <resultMap id="BaseResultMap" type="com.rawchen.shorturl.entity.Log">
+    <id column="id" property="id" />
+    <result column="browser_name" property="browserName" />
+    <result column="os_name" property="osName" />
+    <result column="api_path" property="apiPath" />
+    <result column="ip" property="ip" />
+    <result column="referer" property="referer" />
+    <result column="access_time" property="accessTime" />
+    <result column="short_url_id" property="shortUrlId" />
+  </resultMap>
+
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.rawchen.shorturl.entity.Log">
+    <result column="ua" property="ua" />
+  </resultMap>
+
+  <resultMap id="SevenDayLogResultMap" type="com.rawchen.shorturl.entity.SevenDayLog">
+    <result column="access_date" property="accessDate" />
+    <result column="access_value" property="accessValue" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, browser_name, os_name, api_path, ip, referer, access_time, short_url_id
+  </sql>
+
+  <sql id="Blob_Column_List">
+    ua
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from log
+    where id = #{id}
+  </select>
+
+  <select id="selectYesterdayPv" resultType="int">
+    SELECT count(id) FROM log WHERE DATEDIFF(access_time,NOW()) = -1
+  </select>
+
+  <select id="selectYesterdayUv" resultType="int">
+    SELECT count(distinct ip) FROM log WHERE DATEDIFF(access_time,NOW()) = -1
+    <!-- SELECT count(id) FROM log WHERE DATEDIFF(access_time,NOW()) = -1;-->
+  </select>
+
+  <select id="selectYesterdayAccessByApi" parameterType="string" resultType="int">
+    SELECT count(id) FROM log WHERE DATEDIFF(access_time,NOW()) = -1 and api_path = #{value}
+  </select>
+
+  <select id="selectYesterdayAccessLikeApi" parameterType="string" resultType="int">
+    select count(id) FROM log WHERE DATEDIFF(access_time,NOW()) = -1 and api_path like '%${value}%'
+  </select>
+
+  <select id="selectTodayPv" resultType="int">
+    SELECT count(id) FROM log WHERE TO_DAYS(NOW()) = TO_DAYS(access_time)
+  </select>
+
+  <select id="selectTodayUv" resultType="int">
+    SELECT count(distinct ip) FROM log WHERE TO_DAYS(NOW()) = TO_DAYS(access_time)
+  </select>
+
+  <select id="selectTodayAccessByApi" parameterType="string" resultType="int">
+    select count(id) FROM log WHERE TO_DAYS(NOW()) = TO_DAYS(access_time) and api_path = #{value}
+  </select>
+
+  <select id="selectTodayAccessLikeApi" parameterType="string" resultType="int">
+    select count(id) FROM log WHERE TO_DAYS(NOW()) = TO_DAYS(access_time) and api_path like '%${value}%'
+  </select>
+
+  <select id="selectSevenDaysPv" resultMap="SevenDayLogResultMap">
+    SELECT
+      b.access_date,IFNULL(a.count,0) AS access_value
+    FROM (
+      SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS access_date
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 3 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 4 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    ) AS b
+    LEFT JOIN
+    (
+      SELECT DATE_FORMAT(access_time,'%Y-%m-%d') days, COUNT(0) AS count
+      FROM log
+      GROUP BY days
+    ) AS a
+    ON (b.access_date = a.days)
+    ORDER BY access_date
+  </select>
+
+  <select id="selectSevenDaysUv" resultMap="SevenDayLogResultMap">
+    SELECT
+      b.access_date,IFNULL(a.count,0) AS access_value
+    FROM (
+      SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS access_date
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 3 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 4 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+      UNION ALL
+      SELECT DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    ) AS b
+    LEFT JOIN
+    (
+      SELECT DATE_FORMAT(access_time,'%Y-%m-%d') days, COUNT(DISTINCT ip) AS count
+      <![CDATA[
+        FROM (SELECT * FROM log WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= DATE(access_time)) AS t
+      ]]>
+      GROUP BY days
+    ) AS a
+    ON (b.access_date = a.days)
+    ORDER BY access_date
+  </select>
+
+  <insert id="insert" parameterType="com.rawchen.shorturl.entity.Log">
+    insert into log (id, browser_name, os_name, 
+      api_path, ip, referer, 
+      access_time, short_url_id, ua
+      )
+    values (#{id}, #{browserName}, #{osName},
+      #{apiPath}, #{ip}, #{referer},
+      #{accessTime}, #{shortUrlId}, #{ua}
+      )
+  </insert>
+</mapper>
