@@ -23,12 +23,22 @@ public class ShortUrl {
 
 	private String password;
 
+	private String ip;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date saveTime;
+
+	private Long viewNumber;
+
 	public ShortUrl() {
 	}
 
-	public ShortUrl(String code, String link) {
+	public ShortUrl(String code, String link, String ip) {
 		this.code = code;
 		this.link = link;
+		this.ip = ip;
+		this.saveTime = new Date();
 	}
 
 	public ShortUrl(String code, String link, Date effectiveDate, String password) {
@@ -36,6 +46,40 @@ public class ShortUrl {
 		this.link = link;
 		this.effectiveDate = effectiveDate;
 		this.password = password;
+	}
+
+	public ShortUrl(String code, String link, Date effectiveDate, String password, String ip) {
+		this.code = code;
+		this.link = link;
+		this.effectiveDate = effectiveDate;
+		this.password = password;
+		this.ip = ip;
+		this.saveTime = new Date();
+	}
+
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public Date getSaveTime() {
+		return saveTime;
+	}
+
+	public void setSaveTime(Date saveTime) {
+		this.saveTime = saveTime;
+	}
+
+	public Long getViewNumber() {
+		return viewNumber;
+	}
+
+	public void setViewNumber(Long viewNumber) {
+		this.viewNumber = viewNumber;
 	}
 
 	public Long getId() {
@@ -86,6 +130,9 @@ public class ShortUrl {
 				", link='" + link + '\'' +
 				", effectiveDate=" + effectiveDate +
 				", password='" + password + '\'' +
+				", ip='" + ip + '\'' +
+				", saveTime=" + saveTime +
+				", viewNumber=" + viewNumber +
 				'}';
 	}
 }

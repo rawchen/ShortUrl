@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author RawChen
  * @date 2022-03-30 17:49
@@ -26,7 +28,7 @@ public class ApiController {
 	@RateLimit(name = "新增短链接口", perSecond = 0.1) //默认1秒进0.1个令牌
 	@PostMapping("/insert")
 	@ResponseBody
-	public Result insert(@RequestBody ShortUrlDTO dto) {
+	public Result insert(HttpServletRequest request, @RequestBody ShortUrlDTO dto) {
 		try {
 			if (dto == null)
 				return Result.fail("请勿直接访问");
@@ -54,7 +56,9 @@ public class ApiController {
 					//有重复重新生成编码
 					code = StringUtil.getRandomStrNoCapitalLetter(5);
 				}
-				mapper.insert(new ShortUrl(code, tempUrl, dto.getEffectiveDate(), dto.getPassword()));
+				mapper.insert(new ShortUrl(code, tempUrl,
+						dto.getEffectiveDate(), dto.getPassword(),
+						StringUtil.getIpAddr(request)));
 				return Result.ok(code);
 			}
 
@@ -70,7 +74,7 @@ public class ApiController {
 					//有重复重新生成编码
 					code = StringUtil.getRandomStrNoCapitalLetter(5);
 				}
-				mapper.insert(new ShortUrl(code, tempUrl));
+				mapper.insert(new ShortUrl(code, tempUrl, StringUtil.getIpAddr(request)));
 				return Result.ok(code);
 			}
 		} catch (Exception e) {

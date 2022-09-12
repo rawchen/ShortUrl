@@ -16,9 +16,10 @@
         id, code, link, effective_date
     </sql>
     <insert id="insert" parameterType="ShortUrl">
-        INSERT INTO short_url(code, link, effective_date, password) VALUES (#{code}, #{link}, #{effectiveDate}, #{password})
+        INSERT INTO short_url(code, link, effective_date, password, ip, save_time) VALUES (#{code}, #{link}, #{effectiveDate}, #{password}, #{ip}, #{saveTime})
     </insert>
-	<delete id="scanDeleteExpiredLink">
+
+    <delete id="scanDeleteExpiredLink">
         DELETE FROM short_url
         WHERE effective_date > CURDATE()
     </delete>

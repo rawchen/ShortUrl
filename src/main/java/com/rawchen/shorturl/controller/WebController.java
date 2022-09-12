@@ -51,6 +51,7 @@ public class WebController {
 				//如果有密码
 				if (StrUtil.isBlank(shortUrl.getPassword())) {
 					//没密码
+					mapper.addViewNumberById(shortUrl.getId());
 					return "redirect:" + URIUtil.encodeQuery(shortUrl.getLink());
 				} else {
 					model.addAttribute("code", shortUrl.getCode());
@@ -76,6 +77,7 @@ public class WebController {
 				if (shortUrlData != null && shortUrlData.getPassword() != null) {
 					ShortUrl shortUrl = mapper.getByCodeAndPassword(shortUrlData);
 					if (shortUrl != null) {
+						mapper.addViewNumberById(shortUrl.getId());
 						return Result.ok(URIUtil.encodeQuery(shortUrl.getLink()));
 					} else {
 						return Result.fail("密码错误");

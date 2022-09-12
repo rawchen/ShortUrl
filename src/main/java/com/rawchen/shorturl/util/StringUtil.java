@@ -1,7 +1,10 @@
 package com.rawchen.shorturl.util;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Random;
 import java.util.regex.Pattern;
+
+import static cn.hutool.core.util.StrUtil.isBlank;
 
 /**
  * @author RawChen
@@ -118,5 +121,29 @@ public class StringUtil {
 
 	public static boolean isEmpty(String password) {
 		return password == null || "".equals(password);
+	}
+
+	/**
+	 * 获取ip地址
+	 * @param request
+	 * @return
+	 */
+	public static String getIpAddr(HttpServletRequest request) {
+		String ip = request.getHeader("X-Real-IP");
+		if (!isBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+			return ip;
+		}
+		ip = request.getHeader("X-Forwarded-For");
+		if (!isBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+			// 多次反向代理后会有多个IP值，第一个为真实IP。
+			int index = ip.indexOf(',');
+			if (index != -1) {
+				return ip.substring(0, index);
+			} else {
+				return ip;
+			}
+		} else {
+			return request.getRemoteAddr();
+		}
 	}
 }

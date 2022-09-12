@@ -2,6 +2,7 @@ package com.rawchen.shorturl.mapper;
 
 import com.rawchen.shorturl.entity.ShortUrl;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * Mapper 接口
@@ -21,4 +22,7 @@ public interface UrlMapper {
 	void scanDeleteExpiredLink();
 
 	ShortUrl getByCodeAndPassword(ShortUrl shortUrlData);
+
+	@Update("UPDATE short_url SET `view_number` = (`view_number` + 1) WHERE id = #{id}")
+	void addViewNumberById(Long id);
 }
