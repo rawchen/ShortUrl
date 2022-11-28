@@ -62,7 +62,7 @@ public class WebController {
 					//增加访问数
 					mapper.addViewNumberById(shortUrl.getId());
 					//插入日志
-					logMapper.insert(LogUtil.getLog(request, URIUtil.encodeQuery(shortUrl.getLink()), shortUrl.getId()));
+					logMapper.insert(LogUtil.getLog(request, shortUrl.getLink(), shortUrl.getId()));
 					return "redirect:" + URIUtil.encodeQuery(shortUrl.getLink());
 				} else {
 					model.addAttribute("code", shortUrl.getCode());
