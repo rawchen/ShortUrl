@@ -85,7 +85,7 @@ function doSubmit() {
                     let link = document.location.protocol + "//" + window.location.host + "/" + result.msg;
 
                     $('.ajax').hide().html('<div class="alert alert-success no-round">网址已成功缩短</div>').fadeIn('slow');
-                    $('.share-this').html('<div class="sharetop"><p>短网址</p><span id="short-link">' + link + '</span><div id="copyurl">复制</div></div><div class="panel-default panel-body"><img src="'+ 'https://java.rawchen.com/qrcode/api/?url=' + link + '" alt=""><br>短网址二维码</div>').fadeIn('slow');
+                    $('.share-this').html('<div class="sharetop"><p>短网址</p><span id="short-link">' + link + '</span><div id="copyurl">复制</div></div><div class="panel-default panel-body"><img src="'+ 'https://api.rawchen.com/api/qrcode/?url=' + link + '" alt=""><br>短网址二维码</div>').fadeIn('slow');
                     $("#copyurl").attr("data-clipboard-text", link).show();
                     var copy = new Clipboard('#copyurl');
                     copy.on('success', function(e) {
